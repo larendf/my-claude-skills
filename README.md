@@ -6,21 +6,48 @@ one version-controlled place and installable with a single command.
 
 ## Install
 
-Symlink every skill into `~/.claude/skills/` so edits here are live everywhere:
+Each skill is symlinked into your Claude skills directory so edits here are
+live everywhere. Use the script for your platform.
+
+### macOS / Linux
 
 ```bash
 ./install.sh            # symlink all skills (skips ones already linked)
 ./install.sh --dry-run  # preview, change nothing
 ./install.sh --force    # replace existing entries, even real directories
-```
 
-Remove the symlinks this repo created (leaves real dirs / foreign symlinks alone):
-
-```bash
-./uninstall.sh
+./uninstall.sh          # remove only the symlinks this repo created
 ```
 
 Install to a custom location with `CLAUDE_SKILLS_DIR=/path ./install.sh`.
+
+### Windows (PowerShell)
+
+```powershell
+.\install.ps1           # symlink all skills (skips ones already linked)
+.\install.ps1 -DryRun   # preview, change nothing
+.\install.ps1 -Force    # replace existing entries, even real directories
+
+.\uninstall.ps1         # remove only the symlinks this repo created
+```
+
+Creating symlinks on Windows needs one of:
+
+- **Developer Mode** — Settings → Privacy & security → For developers → turn on
+  *Developer Mode* (no admin rights needed afterward), or
+- an **elevated PowerShell** session (right-click → *Run as Administrator*).
+
+If PowerShell blocks the script, allow it for the current session with
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`.
+
+Install to a custom location with `$env:CLAUDE_SKILLS_DIR = 'D:\skills'` before
+running the script.
+
+> Using WSL or Git Bash on Windows? Use the macOS / Linux `./install.sh` instead.
+
+Both platforms install the same skills — they only differ in how symlinks are
+created. The target defaults to `~/.claude/skills` (`%USERPROFILE%\.claude\skills`
+on Windows).
 
 ## What's inside
 

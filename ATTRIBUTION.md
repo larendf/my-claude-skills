@@ -5,7 +5,7 @@ third-party open-source projects. All retained under the MIT License.
 
 ## My own skills
 
-Authored by me (Luis de la Fuente):
+Authored by me (Laren De la Fuente):
 
 - `skills/aem/aem-build-deploy`
 - `skills/aem/aem-component`
