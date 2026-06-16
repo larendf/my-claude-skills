@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "sitecore",
+  "owner": "twofoldtech-dakota",
+  "repo": "plugin-cms-toolkit",
+  "path": "skills/sitecore",
+  "branch": "main",
+  "sha": "1c30c7d8a36d99cb750708ff5149f553cff30b1e",
+  "source": "manual"
+}

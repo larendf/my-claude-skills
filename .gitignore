@@ -1,0 +1,5 @@
+.DS_Store
+*.log
+.staging/
+.tarballs/
+node_modules/
