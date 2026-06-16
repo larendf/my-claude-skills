@@ -73,8 +73,9 @@ each skill's trigger.
 
 | Skill | When to reach for it |
 |-------|----------------------|
-| `adr-writer`       | Recording a significant technical decision (Nygard-format ADR). |
-| `ci-cd`            | Writing or improving a GitHub Actions pipeline. |
+| `adr-writer`         | Recording a significant technical decision (Nygard-format ADR). |
+| `ci-cd`              | Writing or improving a GitHub Actions pipeline. |
+| `confluence-formatter`| Turning a Markdown file or code into Confluence Cloud paste-ready, nicely styled Markdown (emoji, status circles, callouts, tables). |
 | `playwright-e2e`   | Writing, structuring, or debugging Playwright E2E tests. |
 | `structural-search`| Precise, codebase-wide refactors by AST structure (needs the `ast-grep`/`sg` CLI). |
 
