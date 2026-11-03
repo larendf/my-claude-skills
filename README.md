@@ -14,7 +14,7 @@ skill into context automatically when your task matches it.
 ```bash
 git clone <this-repo> my-claude-skills
 cd my-claude-skills
-./install.sh            # symlink every skill into ~/.claude/skills
+./install.sh            # symlink skills, agents and commands into ~/.claude/
 ```
 
 Then, in any Claude Code session:
@@ -87,6 +87,8 @@ each skill's trigger.
 | `shadcn-ui`              | Adding/customizing shadcn/ui components in a React project. |
 | `tailwind-v4`            | Styling with Tailwind v4 or migrating a v3 config. |
 | `zustand-state`          | Adding or refactoring client state with Zustand 5.x. |
+| `ui-component-review`    | Skeptical review of a built component: spec, conventions, gates, and a check that every design value traces to a source. Ends in APPROVE / REQUEST CHANGES. |
+| `design-fidelity-check`  | Comparing a built component to its design reference at 375/1280/1440 with measured px/hex deltas. |
 
 ### `fundamentals`
 
@@ -99,12 +101,44 @@ each skill's trigger.
 | `security-patterns` | Handling auth, untrusted input, or sensitive data (OWASP Top 10, secrets, PII). |
 | `typescript-patterns`| Modeling types, tightening strictness, or untangling complex generics. |
 
+### `workflow` — the learning loop
+
+| Skill | When to reach for it |
+|-------|----------------------|
+| `record-mistake`  | Something went wrong: write a blameless entry whose Prevention line is a rule (`docs/mistakes/`). |
+| `record-learning` | You verified a non-obvious fact worth starting from next time (`docs/learnings/`). |
+| `promote-rule`    | The same lesson keeps recurring: draft it as a checked-in rule, with a human approval gate. |
+
+These generalize the equivalent skills in a project that already has them. Their names
+differ on purpose (`record-*`, `promote-rule`, `ui-component-review`, `design-fidelity-check`)
+so they never collide with a project's own `log-mistake`, `propose-rule`, `review-component`
+or `fidelity-check`.
+
 ### `personal`
 
 | Skill | When to reach for it |
 |-------|----------------------|
 | `proposal-writer`     | Drafting client proposals, quotes, scopes of work, or engagement letters. |
 | `task-prioritization` | Ranking features or justifying roadmap order (RICE, WSJF, ICE, MoSCoW). |
+
+## Agents and commands
+
+Besides skills, the repo carries user-level **subagents** (`agents/*.md`) and
+**slash commands** (`commands/*.md`). `install.sh` links each file into
+`~/.claude/agents/` and `~/.claude/commands/`, so they are available in every project.
+
+| Agent | When to reach for it |
+|-------|----------------------|
+| `plan-roaster` | A plan, spec or ADR looks finished and you want a cold, read-only second opinion: one weak point, failure modes, a score. |
+| `design-critic` | A UI was built or changed and you want severity-ranked, file:line findings on hierarchy, spacing, contrast, states and design-system use. Read-only, code only. |
+| `security-reviewer` | Auth, API endpoints, input handling, secrets or dependencies changed, or you want an OWASP-style pass. Can run `npm audit` and grep. |
+
+| Command | What it does |
+|---------|--------------|
+| `/component-pipeline <component or spec>` | Plan check (`plan-roaster`) → build → parallel independent review (`design-critic`, `security-reviewer`) → verification gate run by a fresh agent (`ui-component-review`, `design-fidelity-check`) → at most 2 fix rounds, re-reviewed by the same reviewers. The builder cannot downgrade a finding. Leaves everything uncommitted. |
+
+Keep project-specific agents (those that name a repo's paths, contracts or tools)
+in that project's own `.claude/agents/`; only generic ones belong here.
 
 ### `prompting` / `sitecore`
 
@@ -118,20 +152,32 @@ AEM 6.5, Sling Models, OSGi R6, the React feature pipeline, `build.sh`).
 
 ## Install reference
 
-Each skill is symlinked into your Claude skills directory so edits here are live
-everywhere. Use the script for your platform.
+Each skill, agent and command is symlinked into your Claude directory so edits here
+are live everywhere. Use the script for your platform.
+
+> The Windows scripts (`install.ps1` / `uninstall.ps1`) still handle **skills only**.
+> Agent and command support is macOS / Linux for now.
 
 ### macOS / Linux
 
 ```bash
-./install.sh            # symlink all skills (skips ones already linked)
+./install.sh            # symlink everything (skips entries already linked here)
 ./install.sh --dry-run  # preview, change nothing
-./install.sh --force    # replace existing entries, even real directories
+./install.sh --force    # also replace existing links that point elsewhere (real files/folders are skipped)
+./install.sh --replace-real  # as --force, and back up + replace real files/folders too
 
 ./uninstall.sh          # remove only the symlinks this repo created
 ```
 
-Install to a custom location with `CLAUDE_SKILLS_DIR=/path ./install.sh`.
+If a name already exists, the script says whether it is a link to somewhere else
+(and where) or a real file/folder, and skips it unless you pass `--force`. `--force`
+replaces foreign links only. A real file/folder (for example a git clone you keep
+updating) is left alone unless you also pass `--replace-real`, which moves it to
+`~/.claude/backups/my-claude-skills/<kind>/<name>.<timestamp>` rather than deleting it.
+Check with `--force --dry-run` first.
+
+Custom locations: `CLAUDE_SKILLS_DIR`, `CLAUDE_AGENTS_DIR`, `CLAUDE_COMMANDS_DIR`
+(backups: `CLAUDE_BACKUP_DIR`), e.g. `CLAUDE_SKILLS_DIR=/path ./install.sh`.
 
 ### Windows (PowerShell)
 
@@ -169,6 +215,10 @@ skills/
     <skill-name>/
       SKILL.md        # required — frontmatter (name, description) + body
       ...             # optional references/, scripts/, examples/, etc.
+agents/
+  <agent-name>.md     # subagent: frontmatter (name, description, tools, model) + prompt
+commands/
+  <command-name>.md   # slash command: /<command-name>
 ```
 
 `install.sh` discovers skills by finding every `SKILL.md`, so nesting depth and
